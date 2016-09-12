@@ -1,76 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<TabHost
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@android:id/tabhost"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".ui.activity.LunchList">
 
-    <TableLayout
-        android:id="@+id/tbl_add"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:stretchColumns="1">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TableRow>
-
-            <TextView android:text="Name:"/>
-
-            <EditText android:id="@+id/edt_main_name"/>
-        </TableRow>
-
-        <TableRow>
-
-            <TextView android:text="Address:"/>
-
-            <EditText android:id="@+id/edt_main_address"/>
-        </TableRow>
-
-        <TableRow>
-
-            <TextView android:text="Type:"/>
-
-            <RadioGroup
-                android:id="@+id/rg_main_types"
-                android:orientation="vertical">
-
-                <RadioButton
-                    android:id="@+id/rb_take_out"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="Take-Out"/>
-
-                <RadioButton
-                    android:id="@+id/rb_sit_down"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sit-Down"/>
-
-                <RadioButton
-                    android:id="@+id/rb_delivery"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Delivery"/>
-
-            </RadioGroup>
-        </TableRow>
-
-        <Button
-            android:id="@+id/btn_main_save"
+        <TabWidget
+            android:id="@android:id/tabs"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Save"/>
-    </TableLayout>
+            android:layout_height="wrap_content"/>
 
-    <ListView
-        android:id="@+id/lv_restaurants"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/tbl_add"
-        android:layout_alignParentTop="true">
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/activity_vertical_margin">
 
-    </ListView>
-</RelativeLayout>
+            <ListView
+                android:id="@+id/lv_restaurants"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </ListView>
+
+            <TableLayout
+                android:id="@+id/tbl_add"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="1">
+
+                <TableRow>
+
+                    <TextView android:text="Name:"/>
+
+                    <EditText android:id="@+id/edt_main_name"/>
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView android:text="Address:"/>
+
+                    <EditText android:id="@+id/edt_main_address"/>
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView android:text="Type:"/>
+
+                    <RadioGroup
+                        android:id="@+id/rg_main_types"
+                        android:orientation="vertical">
+
+                        <RadioButton
+                            android:id="@+id/rb_take_out"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="Take-Out"/>
+
+                        <RadioButton
+                            android:id="@+id/rb_sit_down"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sit-Down"/>
+
+                        <RadioButton
+                            android:id="@+id/rb_delivery"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Delivery"/>
+
+                    </RadioGroup>
+                </TableRow>
+
+                <Button
+                    android:id="@+id/btn_main_save"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Save"/>
+            </TableLayout>
+        </FrameLayout>
+    </LinearLayout>
+</TabHost>

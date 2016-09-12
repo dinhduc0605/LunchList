@@ -1,15 +1,17 @@
 package tutorial.apt.lunchlist.ui.activity;
 
+import android.app.TabActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ import java.util.List;
 import tutorial.apt.lunchlist.R;
 import tutorial.apt.lunchlist.model.Restaurant;
 
-public class LunchList extends AppCompatActivity {
+public class LunchList extends TabActivity {
     private List<Restaurant> mRestaurants = new ArrayList<>();
     private EditText mEdtName, mEdtAddress;
     private Button mBtnSave;
@@ -65,7 +67,37 @@ public class LunchList extends AppCompatActivity {
         mLvRestaurants = (ListView) findViewById(R.id.lv_restaurants);
         mAdapter = new RestaurantAdapter();
         mLvRestaurants.setAdapter(mAdapter);
+        mLvRestaurants.setOnItemClickListener(onItemClicked);
+
+        TabHost.TabSpec spec = getTabHost().newTabSpec("tab1");
+        spec.setContent(R.id.lv_restaurants);
+        spec.setIndicator("List", getResources().getDrawable(R.drawable.list));
+        getTabHost().addTab(spec);
+
+        spec = getTabHost().newTabSpec("tab2");
+        spec.setContent(R.id.tbl_add);
+        spec.setIndicator("Details", getResources().getDrawable(R.drawable.restaurant));
+        getTabHost().addTab(spec);
+
+        getTabHost().setCurrentTab(0);
     }
+
+    private AdapterView.OnItemClickListener onItemClicked = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            Restaurant r = mRestaurants.get(position);
+            mEdtName.setText(r.getName());
+            mEdtAddress.setText(r.getAddress());
+            if (r.getType().equals("sit_down")) {
+                mTypeRadioGroup.check(R.id.rb_sit_down);
+            } else if (r.getType().equals("take_out")) {
+                mTypeRadioGroup.check(R.id.rb_take_out);
+            } else {
+                mTypeRadioGroup.check(R.id.rb_delivery);
+            }
+            getTabHost().setCurrentTab(1);
+        }
+    };
 
     class RestaurantAdapter extends ArrayAdapter<Restaurant> {
 

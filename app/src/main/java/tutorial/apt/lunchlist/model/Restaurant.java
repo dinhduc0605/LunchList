@@ -7,6 +7,7 @@ public class Restaurant {
     private String mName = "";
     private String mAddress = "";
     private String mType = "";
+    private String mNotes = "";
 
     public String getName() {
         return mName;
@@ -30,6 +31,14 @@ public class Restaurant {
 
     public void setType(String type) {
         mType = type;
+    }
+
+    public String getNotes() {
+        return mNotes;
+    }
+
+    public void setNotes(String notes) {
+        mNotes = notes;
     }
 
     @Override
