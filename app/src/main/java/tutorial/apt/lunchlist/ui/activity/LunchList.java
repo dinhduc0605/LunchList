@@ -3,11 +3,14 @@ package tutorial.apt.lunchlist.ui.activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +24,7 @@ public class LunchList extends AppCompatActivity {
     private Button mBtnSave;
     private RadioGroup mTypeRadioGroup;
     private ListView mLvRestaurants;
-    private ArrayAdapter<Restaurant> mAdapter;
+    private RestaurantAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +43,10 @@ public class LunchList extends AppCompatActivity {
                 restaurant.setAddress(mEdtAddress.getText().toString());
                 switch (mTypeRadioGroup.getCheckedRadioButtonId()) {
                     case R.id.rb_take_out:
-                        restaurant.setType("take-out");
+                        restaurant.setType("take_out");
                         break;
                     case R.id.rb_sit_down:
-                        restaurant.setType("sit-down");
+                        restaurant.setType("sit_down");
                         break;
                     case R.id.rb_delivery:
                         restaurant.setType("delivery");
@@ -60,8 +63,54 @@ public class LunchList extends AppCompatActivity {
         mEdtAddress = (EditText) findViewById(R.id.edt_main_address);
         mTypeRadioGroup = (RadioGroup) findViewById(R.id.rg_main_types);
         mLvRestaurants = (ListView) findViewById(R.id.lv_restaurants);
-        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, mRestaurants);
+        mAdapter = new RestaurantAdapter();
         mLvRestaurants.setAdapter(mAdapter);
+    }
+
+    class RestaurantAdapter extends ArrayAdapter<Restaurant> {
+
+        public RestaurantAdapter() {
+            super(LunchList.this, R.layout.row, mRestaurants);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View row = convertView;
+            RestaurantHolder holder = null;
+            if (row == null) {
+                row = getLayoutInflater().inflate(R.layout.row, parent, false);
+                holder = new RestaurantHolder(row);
+                row.setTag(holder);
+            } else {
+                holder = (RestaurantHolder) row.getTag();
+            }
+            holder.populateFrom(mRestaurants.get(position));
+            return row;
+        }
+    }
+
+    static class RestaurantHolder {
+        private ImageView mIcon;
+        private TextView mName;
+        private TextView mAddress;
+
+        public RestaurantHolder(View row) {
+            mIcon = (ImageView) row.findViewById(R.id.icon);
+            mName = (TextView) row.findViewById(R.id.name);
+            mAddress = (TextView) row.findViewById(R.id.address);
+        }
+
+        void populateFrom(Restaurant restaurant) {
+            mName.setText(restaurant.getName());
+            mAddress.setText(restaurant.getAddress());
+            if (restaurant.getType().equals("sit_down")) {
+                mIcon.setImageResource(R.drawable.ball_red);
+            } else if (restaurant.getType().equals("take_out")) {
+                mIcon.setImageResource(R.drawable.ball_yellow);
+            } else {
+                mIcon.setImageResource(R.drawable.ball_green);
+            }
+        }
     }
 
 }
