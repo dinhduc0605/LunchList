@@ -2,6 +2,9 @@ package tutorial.apt.lunchlist.ui.activity;
 
 import android.app.TabActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -13,6 +16,7 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +26,12 @@ import tutorial.apt.lunchlist.model.Restaurant;
 
 public class LunchList extends TabActivity {
     private List<Restaurant> mRestaurants = new ArrayList<>();
-    private EditText mEdtName, mEdtAddress;
+    private EditText mEdtName, mEdtAddress, mEdtNote;
     private Button mBtnSave;
     private RadioGroup mTypeRadioGroup;
     private ListView mLvRestaurants;
     private RestaurantAdapter mAdapter;
+    private Restaurant mCurrent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,7 @@ public class LunchList extends TabActivity {
                 Restaurant restaurant = new Restaurant();
                 restaurant.setName(mEdtName.getText().toString());
                 restaurant.setAddress(mEdtAddress.getText().toString());
+                restaurant.setNotes(mEdtNote.getText().toString());
                 switch (mTypeRadioGroup.getCheckedRadioButtonId()) {
                     case R.id.rb_take_out:
                         restaurant.setType("take_out");
@@ -55,6 +61,7 @@ public class LunchList extends TabActivity {
                         break;
                 }
                 mAdapter.add(restaurant);
+                mCurrent = restaurant;
             }
         });
     }
@@ -63,6 +70,7 @@ public class LunchList extends TabActivity {
         mBtnSave = (Button) findViewById(R.id.btn_main_save);
         mEdtName = (EditText) findViewById(R.id.edt_main_name);
         mEdtAddress = (EditText) findViewById(R.id.edt_main_address);
+        mEdtNote = (EditText) findViewById(R.id.edt_main_notes);
         mTypeRadioGroup = (RadioGroup) findViewById(R.id.rg_main_types);
         mLvRestaurants = (ListView) findViewById(R.id.lv_restaurants);
         mAdapter = new RestaurantAdapter();
@@ -98,6 +106,25 @@ public class LunchList extends TabActivity {
             getTabHost().setCurrentTab(1);
         }
     };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        new MenuInflater(this).inflate(R.menu.option, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.toast) {
+            String message = "No Restaurant selected";
+            if (mCurrent != null) {
+                message = mCurrent.getNotes();
+            }
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     class RestaurantAdapter extends ArrayAdapter<Restaurant> {
 

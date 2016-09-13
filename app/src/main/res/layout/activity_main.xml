@@ -30,62 +30,81 @@
 
             </ListView>
 
-            <TableLayout
-                android:id="@+id/tbl_add"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:stretchColumns="1">
+                android:layout_height="wrap_content">
 
-                <TableRow>
-
-                    <TextView android:text="Name:"/>
-
-                    <EditText android:id="@+id/edt_main_name"/>
-                </TableRow>
-
-                <TableRow>
-
-                    <TextView android:text="Address:"/>
-
-                    <EditText android:id="@+id/edt_main_address"/>
-                </TableRow>
-
-                <TableRow>
-
-                    <TextView android:text="Type:"/>
-
-                    <RadioGroup
-                        android:id="@+id/rg_main_types"
-                        android:orientation="vertical">
-
-                        <RadioButton
-                            android:id="@+id/rb_take_out"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:checked="true"
-                            android:text="Take-Out"/>
-
-                        <RadioButton
-                            android:id="@+id/rb_sit_down"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Sit-Down"/>
-
-                        <RadioButton
-                            android:id="@+id/rb_delivery"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Delivery"/>
-
-                    </RadioGroup>
-                </TableRow>
-
-                <Button
-                    android:id="@+id/btn_main_save"
+                <TableLayout
+                    android:id="@+id/tbl_add"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Save"/>
-            </TableLayout>
+                    android:stretchColumns="1">
+
+                    <TableRow>
+
+                        <TextView android:text="Name:"/>
+
+                        <EditText android:id="@+id/edt_main_name"/>
+                    </TableRow>
+
+                    <TableRow>
+
+                        <TextView android:text="Address:"/>
+
+                        <EditText android:id="@+id/edt_main_address"/>
+                    </TableRow>
+
+                    <TableRow>
+
+                        <TextView android:text="Type:"/>
+
+                        <RadioGroup
+                            android:id="@+id/rg_main_types"
+                            android:orientation="vertical">
+
+                            <RadioButton
+                                android:id="@+id/rb_take_out"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                android:text="Take-Out"/>
+
+                            <RadioButton
+                                android:id="@+id/rb_sit_down"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sit-Down"/>
+
+                            <RadioButton
+                                android:id="@+id/rb_delivery"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Delivery"/>
+
+                        </RadioGroup>
+                    </TableRow>
+
+                    <TableRow>
+
+                        <TextView android:text="Notes:"/>
+
+                        <EditText
+                            android:id="@+id/edt_main_notes"
+                            android:gravity="top"
+                            android:lines="2"
+                            android:maxLines="2"
+                            android:maxWidth="200sp"
+                            android:scrollHorizontally="false"
+                            android:singleLine="false"/>
+                    </TableRow>
+
+                    <Button
+                        android:id="@+id/btn_main_save"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Save"/>
+                </TableLayout>
+            </ScrollView>
         </FrameLayout>
     </LinearLayout>
 </TabHost>
