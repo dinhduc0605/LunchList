@@ -2,11 +2,13 @@ package tutorial.apt.lunchlist.ui.activity;
 
 import android.app.TabActivity;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -32,10 +34,12 @@ public class LunchList extends TabActivity {
     private ListView mLvRestaurants;
     private RestaurantAdapter mAdapter;
     private Restaurant mCurrent;
+    private int mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_PROGRESS);
         setContentView(R.layout.activity_main);
         initView();
         getWidgetControl();
@@ -90,6 +94,32 @@ public class LunchList extends TabActivity {
         getTabHost().setCurrentTab(0);
     }
 
+    private Runnable longTask = new Runnable() {
+        @Override
+        public void run() {
+            for (int i = 0; i < 20; i++) {
+                doSomeLongWork(500);
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setProgressBarVisibility(false);
+                }
+            });
+        }
+    };
+
+    private void doSomeLongWork(final int incr) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgress +=incr;
+                setProgress(mProgress);
+            }
+        });
+        SystemClock.sleep(250);
+    }
+
     private AdapterView.OnItemClickListener onItemClicked = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -122,6 +152,9 @@ public class LunchList extends TabActivity {
             }
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             return true;
+        }else if (item.getItemId()==R.id.run){
+            setProgressBarVisibility(true);
+            new Thread(longTask).start();
         }
         return super.onOptionsItemSelected(item);
     }
