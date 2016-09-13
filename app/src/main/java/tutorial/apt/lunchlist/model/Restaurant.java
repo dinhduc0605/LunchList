@@ -9,6 +9,17 @@ public class Restaurant {
     private String mType = "";
     private String mNotes = "";
 
+    public Restaurant() {
+
+    }
+
+    public Restaurant(String name, String address, String type, String notes) {
+        mName = name;
+        mAddress = address;
+        mType = type;
+        mNotes = notes;
+    }
+
     public String getName() {
         return mName;
     }

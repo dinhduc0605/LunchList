@@ -2,11 +2,13 @@ package tutorial.apt.lunchlist.ui.activity;
 
 import android.app.TabActivity;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -32,10 +34,19 @@ public class LunchList extends TabActivity {
     private ListView mLvRestaurants;
     private RestaurantAdapter mAdapter;
     private Restaurant mCurrent;
+    private int mProgress;
+    private Restaurant[] mRestaurantList = {
+            new Restaurant("Hà Nội", "Thủ đô của nước Cộng hoà Xã hội chủ nghĩa Việt Nam", "sit_down", ""),
+            new Restaurant("Bắc Kinh", "Thành phố lớn thứ hai của Trung Quốc", "sit_down", ""),
+            new Restaurant("Washington, D.C", "Thủ đô của Hoa Kỳ", "sit_down", ""),
+            new Restaurant("New York", "Nằm trong vùng Đông Bắc Hoa Kỳ", "sit_down", ""),
+            new Restaurant("Hồ Chí Minh", "Thành phố lớn nhất Việt Nam", "sit_down", "")
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_PROGRESS);
         setContentView(R.layout.activity_main);
         initView();
         getWidgetControl();
@@ -90,6 +101,33 @@ public class LunchList extends TabActivity {
         getTabHost().setCurrentTab(0);
     }
 
+    private Runnable longTask = new Runnable() {
+        @Override
+        public void run() {
+            for (int i = 0; i < 5; i++) {
+                doSomeLongWork(i, 2000);
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setProgressBarVisibility(false);
+                }
+            });
+        }
+    };
+
+    private void doSomeLongWork(final int i, final int incr) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgress += incr;
+                setProgress(mProgress);
+                mAdapter.add(mRestaurantList[i]);
+            }
+        });
+        SystemClock.sleep(500);
+    }
+
     private AdapterView.OnItemClickListener onItemClicked = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -122,6 +160,9 @@ public class LunchList extends TabActivity {
             }
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             return true;
+        } else if (item.getItemId() == R.id.run) {
+            setProgressBarVisibility(true);
+            new Thread(longTask).start();
         }
         return super.onOptionsItemSelected(item);
     }
