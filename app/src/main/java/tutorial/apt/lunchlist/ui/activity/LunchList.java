@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import tutorial.apt.lunchlist.R;
 import tutorial.apt.lunchlist.model.Restaurant;
@@ -35,6 +36,7 @@ public class LunchList extends TabActivity {
     private RestaurantAdapter mAdapter;
     private Restaurant mCurrent;
     private int mProgress;
+    private AtomicBoolean isActive;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,7 @@ public class LunchList extends TabActivity {
     }
 
     private void initView() {
+        isActive = new AtomicBoolean(true);
         mBtnSave = (Button) findViewById(R.id.btn_main_save);
         mEdtName = (EditText) findViewById(R.id.edt_main_name);
         mEdtAddress = (EditText) findViewById(R.id.edt_main_address);
@@ -97,15 +100,17 @@ public class LunchList extends TabActivity {
     private Runnable longTask = new Runnable() {
         @Override
         public void run() {
-            for (int i = 0; i < 20; i++) {
-                doSomeLongWork(500);
+            for (int i = 0; i < 10000 && isActive.get(); i += 200) {
+                doSomeLongWork(200);
             }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    setProgressBarVisibility(false);
-                }
-            });
+            if (isActive.get()) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setProgressBarVisibility(false);
+                    }
+                });
+            }
         }
     };
 
@@ -113,7 +118,7 @@ public class LunchList extends TabActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mProgress +=incr;
+                mProgress += incr;
                 setProgress(mProgress);
             }
         });
@@ -137,6 +142,26 @@ public class LunchList extends TabActivity {
         }
     };
 
+    private void startWork() {
+        setProgressBarVisibility(true);
+        new Thread(longTask).start();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isActive.set(true);
+        if (mProgress > 0) {
+            startWork();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isActive.set(false);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         new MenuInflater(this).inflate(R.menu.option, menu);
@@ -152,9 +177,8 @@ public class LunchList extends TabActivity {
             }
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             return true;
-        }else if (item.getItemId()==R.id.run){
-            setProgressBarVisibility(true);
-            new Thread(longTask).start();
+        } else if (item.getItemId() == R.id.run) {
+            startWork();
         }
         return super.onOptionsItemSelected(item);
     }
