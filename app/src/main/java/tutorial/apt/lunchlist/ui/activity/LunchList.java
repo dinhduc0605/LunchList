@@ -116,7 +116,7 @@ public class LunchList extends TabActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.toast) {
-            String message = "No Restaurant selected";
+            String message = "Hoang Minh Tuan \n20122674";
             if (mCurrent != null) {
                 message = mCurrent.getNotes();
             }
