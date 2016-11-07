@@ -38,9 +38,9 @@ public class RestaurantHelper extends SQLiteOpenHelper {
         getWritableDatabase().insert("restaurants", "name", cv);
     }
 
-    public Cursor getAll() {
+    public Cursor getAll(String orderBy) {
         return (getReadableDatabase()
-                .rawQuery("SELECT * FROM restaurants ORDER BY name", null));
+                .rawQuery("SELECT * FROM restaurants ORDER BY " + orderBy, null));
     }
 
     public Cursor getById(String id) {
@@ -51,8 +51,8 @@ public class RestaurantHelper extends SQLiteOpenHelper {
 
     public void update(String id, String name, String address,
                        String type, String notes) {
-        ContentValues cv=new ContentValues();
-        String[] args={id};
+        ContentValues cv = new ContentValues();
+        String[] args = {id};
         cv.put("name", name);
         cv.put("address", address);
         cv.put("type", type);

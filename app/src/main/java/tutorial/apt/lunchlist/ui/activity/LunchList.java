@@ -3,8 +3,10 @@ package tutorial.apt.lunchlist.ui.activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,16 +28,24 @@ public class LunchList extends ListActivity {
     private Restaurant mCurrent;
     private RestaurantHelper helper;
     private Cursor model;
+    SharedPreferences prefs;
+    private SharedPreferences.OnSharedPreferenceChangeListener prefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+            if (s.equals("sort_order")) {
+                initList();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         helper = new RestaurantHelper(this);
-        model = helper.getAll();
-        startManagingCursor(model);
-        adapter = new RestaurantAdapter(model);
-        setListAdapter(adapter);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        initList();
+        prefs.registerOnSharedPreferenceChangeListener(prefListener);
     }
 
     @Override
@@ -63,8 +73,22 @@ public class LunchList extends ListActivity {
         if (item.getItemId() == R.id.add) {
             startActivity(new Intent(this, DetailForm.class));
             return true;
+        } else if (item.getItemId() == R.id.prefs) {
+            startActivity(new Intent(this, EditPreferences.class));
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void initList() {
+        if (model != null) {
+            stopManagingCursor(model);
+            model.close();
+        }
+        model = helper.getAll(prefs.getString("sort_order", "name"));
+        startManagingCursor(model);
+        adapter = new RestaurantAdapter(model);
+        setListAdapter(adapter);
     }
 
     class RestaurantAdapter extends CursorAdapter {
