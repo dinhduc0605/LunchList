@@ -1,126 +1,71 @@
 package tutorial.apt.lunchlist.ui.activity;
 
-import android.app.TabActivity;
+import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.CursorAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RadioGroup;
-import android.widget.TabHost;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import tutorial.apt.lunchlist.R;
 import tutorial.apt.lunchlist.model.Restaurant;
 import tutorial.apt.lunchlist.util.RestaurantHelper;
 
-public class LunchList extends TabActivity {
-    private List<Restaurant> mRestaurants = new ArrayList<>();
-    private EditText mEdtName, mEdtAddress, mEdtNote;
-    private Button mBtnSave;
-    private RadioGroup mTypeRadioGroup;
-    private ListView mLvRestaurants;
-    private RestaurantAdapter mAdapter;
+public class LunchList extends ListActivity {
+    public final static String ID_EXTRA = "apt.tutorial._ID";
+    private RestaurantAdapter adapter;
     private Restaurant mCurrent;
-    private RestaurantHelper mHelper;
+    private RestaurantHelper helper;
     private Cursor model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        initView();
-        getWidgetControl();
+        setContentView(R.layout.main);
+        helper = new RestaurantHelper(this);
+        model = helper.getAll();
+        startManagingCursor(model);
+        adapter = new RestaurantAdapter(model);
+        setListAdapter(adapter);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mHelper.close();
+        helper.close();
     }
 
-    private void getWidgetControl() {
-        mBtnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String type = null;
-                switch (mTypeRadioGroup.getCheckedRadioButtonId()) {
-                    case R.id.rb_take_out:
-                        type = "take_out";
-                        break;
-                    case R.id.rb_sit_down:
-                        type = "sit_down";
-                        break;
-                    case R.id.rb_delivery:
-                        type = "delivery";
-                        break;
-                }
-                mHelper.insert(
-                        mEdtName.getText().toString(),
-                        mEdtAddress.getText().toString(),
-                        type,
-                        mEdtNote.getText().toString()
-                );
-                model.requery();
-            }
-        });
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        Intent i = new Intent(LunchList.this, DetailForm.class);
+        i.putExtra(ID_EXTRA, String.valueOf(id));
+        startActivity(i);
     }
 
-    private void initView() {
-        mHelper = new RestaurantHelper(this);
-
-        mBtnSave = (Button) findViewById(R.id.btn_main_save);
-        mEdtName = (EditText) findViewById(R.id.edt_main_name);
-        mEdtAddress = (EditText) findViewById(R.id.edt_main_address);
-        mEdtNote = (EditText) findViewById(R.id.edt_main_notes);
-        mTypeRadioGroup = (RadioGroup) findViewById(R.id.rg_main_types);
-        mLvRestaurants = (ListView) findViewById(R.id.lv_restaurants);
-
-        model = mHelper.getAll();
-        startManagingCursor(model);
-        mAdapter = new RestaurantAdapter(model);
-        mLvRestaurants.setAdapter(mAdapter);
-        mLvRestaurants.setOnItemClickListener(onItemClicked);
-
-        TabHost.TabSpec spec = getTabHost().newTabSpec("tab1");
-        spec.setContent(R.id.lv_restaurants);
-        spec.setIndicator("List", getResources().getDrawable(R.drawable.list));
-        getTabHost().addTab(spec);
-
-        spec = getTabHost().newTabSpec("tab2");
-        spec.setContent(R.id.tbl_add);
-        spec.setIndicator("Details", getResources().getDrawable(R.drawable.restaurant));
-        getTabHost().addTab(spec);
-
-        getTabHost().setCurrentTab(0);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        new MenuInflater(this).inflate(R.menu.option, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
-    private AdapterView.OnItemClickListener onItemClicked = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-            model.moveToPosition(position);
-            mEdtName.setText(mHelper.getName(model));
-            mEdtAddress.setText(mHelper.getAddress(model));
-            if (mHelper.getType(model).equals("sit_down")) {
-                mTypeRadioGroup.check(R.id.rb_sit_down);
-            } else if (mHelper.getType(model).equals("take_out")) {
-                mTypeRadioGroup.check(R.id.rb_take_out);
-            } else {
-                mTypeRadioGroup.check(R.id.rb_delivery);
-            }
-            getTabHost().setCurrentTab(1);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.add) {
+            startActivity(new Intent(this, DetailForm.class));
+            return true;
         }
-    };
+        return super.onOptionsItemSelected(item);
+    }
 
     class RestaurantAdapter extends CursorAdapter {
         RestaurantAdapter(Cursor c) {
@@ -130,7 +75,7 @@ public class LunchList extends TabActivity {
         @Override
         public void bindView(View row, Context context, Cursor c) {
             RestaurantHolder holder = (RestaurantHolder) row.getTag();
-            holder.populateFrom(c, mHelper);
+            holder.populateFrom(c, helper);
         }
 
         @Override
