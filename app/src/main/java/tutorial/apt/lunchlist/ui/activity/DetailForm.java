@@ -1,12 +1,19 @@
 package tutorial.apt.lunchlist.ui.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import tutorial.apt.lunchlist.R;
 import tutorial.apt.lunchlist.util.RestaurantHelper;
@@ -22,6 +29,7 @@ public class DetailForm extends Activity {
     RadioGroup types = null;
     RestaurantHelper helper = null;
     String restaurantId = null;
+    EditText feed = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +41,7 @@ public class DetailForm extends Activity {
         notes = (EditText) findViewById(R.id.notes);
         types = (RadioGroup) findViewById(R.id.types);
         Button save = (Button) findViewById(R.id.save);
+        feed = (EditText) findViewById(R.id.feed);
         save.setOnClickListener(onSave);
         restaurantId = getIntent().getStringExtra(LunchList.ID_EXTRA);
         if (restaurantId != null) {
@@ -81,11 +90,13 @@ public class DetailForm extends Activity {
             if (restaurantId == null) {
                 helper.insert(name.getText().toString(),
                         address.getText().toString(), type,
-                        notes.getText().toString());
+                        notes.getText().toString(),
+                        feed.getText().toString());
             } else {
                 helper.update(restaurantId, name.getText().toString(),
                         address.getText().toString(), type,
-                        notes.getText().toString());
+                        notes.getText().toString(),
+                        feed.getText().toString());
             }
             finish();
         }
@@ -97,6 +108,7 @@ public class DetailForm extends Activity {
         name.setText(helper.getName(c));
         address.setText(helper.getAddress(c));
         notes.setText(helper.getNotes(c));
+        feed.setText(helper.getFeed(c));
         if (helper.getType(c).equals("sit_down")) {
             types.check(R.id.sit_down);
         } else if (helper.getType(c).equals("take_out")) {
@@ -105,5 +117,36 @@ public class DetailForm extends Activity {
             types.check(R.id.delivery);
         }
         c.close();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        new MenuInflater(this).inflate(R.menu.details_option, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId()==R.id.feed) {
+            if (isNetworkAvailable()) {
+                Intent i=new Intent(this, FeedActivity.class);
+                i.putExtra(FeedActivity.FEED_URL, feed.getText().toString());
+                startActivity(i);
+            }
+            else {
+                Toast
+                        .makeText(this, "Sorry, the Internet is not available",
+                                Toast.LENGTH_LONG)
+                        .show();
+            }
+            return(true);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager cm=(ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo info=cm.getActiveNetworkInfo();
+        return(info!=null);
     }
 }

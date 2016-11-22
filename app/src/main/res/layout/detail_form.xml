@@ -6,8 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:shrinkColumns="1"
-        android:stretchColumns="1"
-        >
+        android:stretchColumns="1">
 
         <TableRow>
 
@@ -50,25 +49,23 @@
             </RadioGroup>
         </TableRow>
 
-        <TableRow>
+        <EditText
+            android:id="@+id/notes"
+            android:gravity="top"
+            android:hint="Notes"
+            android:inputType="textMultiLine"
+            android:lines="2"
+            android:maxLines="2"
+            android:scrollHorizontally="false"/>
 
-            <TextView android:text="Notes:"/>
-
-            <EditText
-                android:id="@+id/notes"
-                android:gravity="top"
-                android:inputType="textMultiLine"
-                android:lines="2"
-                android:maxLines="2"
-                android:scrollHorizontally="false"
-                />
-        </TableRow>
+        <EditText
+            android:id="@+id/feed"
+            android:hint="Feed URL"/>
 
         <Button
             android:id="@+id/save"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Save"
-            />
+            android:text="Save"/>
     </TableLayout>
 </ScrollView>
